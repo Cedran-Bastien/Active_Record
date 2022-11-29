@@ -31,13 +31,13 @@ public class Personne {
      *      une liste de Personne
      * @throws SQLException
      */
-    public static List<Personne> findAll() throws SQLException {
+    public static ArrayList<Personne> findAll() throws SQLException {
         Connection c = DBConnection.getConnection();
         String SQLPrep = "SELECT * FROM Personne;";
         PreparedStatement prep1 = c.prepareStatement(SQLPrep);
         prep1.execute();
         ResultSet rs = prep1.getResultSet();
-        List<Personne> res = new ArrayList<Personne>();
+        ArrayList<Personne> res = new ArrayList<Personne>();
         // s'il y a un resultat
         while (rs.next()) {
             String nom = rs.getString("nom");
@@ -86,14 +86,14 @@ public class Personne {
      *      liste de personne avec le nom correspondant
      * @throws SQLException
      */
-    public static List<Personne> findByName(String name) throws SQLException {
+    public static ArrayList<Personne> findByName(String name) throws SQLException {
         Connection c = DBConnection.getConnection();
         String SQLPrep = "SELECT * FROM Personne WHERE nom = ?;";
         PreparedStatement prep1 = c.prepareStatement(SQLPrep);
         prep1.setString(1, name);
         prep1.execute();
         ResultSet rs = prep1.getResultSet();
-        List<Personne> res = new ArrayList<Personne>();
+        ArrayList<Personne> res = new ArrayList<Personne>();
         // s'il y a un resultat
         while (rs.next()) {
             String nom = rs.getString("nom");
@@ -205,5 +205,9 @@ public class Personne {
 
     public String getNom() {
         return nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
     }
 }
