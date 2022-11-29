@@ -1,5 +1,7 @@
 package activeRecord;
 
+import jdk.jshell.PersistentSnippet;
+
 import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -123,10 +125,15 @@ public class Personne {
     private void saveNew() throws SQLException {
         Connection c = DBConnection.getConnection();
         String SQLPrep = "INSERT INTO Personne (nom, prenom) VALUES (?,?);";
-        PreparedStatement prep = c.prepareStatement(SQLPrep, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement prep = c.prepareStatement(SQLPrep,Statement.RETURN_GENERATED_KEYS);
         prep.setString(1, this.nom);
         prep.setString(2, this.prenom);
         prep.executeUpdate();
+        final var resultSet = prep.getGeneratedKeys();
+        if (resultSet.next()) {
+            this.id = resultSet.getInt(1);
+        }
+
     }
 
     /**
@@ -149,7 +156,7 @@ public class Personne {
      */
     public void delete() throws SQLException {
         Connection c = DBConnection.getConnection();
-        String SQLPrep = "DELETE * FROM Personne WHERE id = ?;";
+        String SQLPrep = "DELETE FROM Personne WHERE id = ?;";
         PreparedStatement prep1 = c.prepareStatement(SQLPrep);
         prep1.setInt(1, this.id);
         prep1.execute();
@@ -162,11 +169,8 @@ public class Personne {
      */
     public static void createTable() throws SQLException {
         Connection c = DBConnection.getConnection();
-        String SQLPrep = "CREATE TABLE `Personne` (" +
-                "  `id` int(11) NOT NULL," +
-                "  `nom` varchar(40) NOT NULL," +
-                "  `prenom` varchar(40) NOT NULL" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+        String SQLPrep = "CREATE TABLE Personne ( " + "ID INTEGER  AUTO_INCREMENT, "
+                + "NOM varchar(40) NOT NULL, " + "PRENOM varchar(40) NOT NULL, " + "PRIMARY KEY (ID))";
         PreparedStatement s = c.prepareStatement(SQLPrep);
         s.execute();
     }
@@ -182,12 +186,24 @@ public class Personne {
         s.execute();
     }
 
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
     /**
-     * change l'id d'une personne
-     * @param id
-     *      le nouvelle id
+     *
+     * @return
+     *      l'id de la personne this
      */
-    public void setId(int id) {
-        this.id = id;
+    public int getId() {
+        return id;
+    }
+
+    public String getNom() {
+        return nom;
     }
 }
