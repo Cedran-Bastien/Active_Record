@@ -1,7 +1,7 @@
 package activeRecord;
 
-import javax.swing.plaf.FileChooserUI;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Film {
@@ -59,7 +59,7 @@ public class Film {
      */
     public static List<Film> findByRealisateur(Personne p) throws SQLException {
         //personne a retourner
-        List<Film> res = null;
+        List<Film> res = new ArrayList<>();
 
         Connection c = DBConnection.getConnection();
         String SQLPrep = "SELECT * FROM Film WHERE id_rea=?;";
@@ -101,11 +101,12 @@ public class Film {
         }
         //creation de la table Film
         Connection c = DBConnection.getConnection();
-        String SQLPrep = "CREATE TABLE `Film` (\n" +
-                "  `id` int(11) NOT NULL,\n" +
-                "  `titre` varchar(40) NOT NULL,\n" +
-                "  `id_rea` int(11) DEFAULT NULL\n" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=latin1;\n";
+        String SQLPrep = "CREATE TABLE `Film` (" +
+                "  `id` int(11) AUTO_INCREMENT," +
+                "  `titre` varchar(40)   ," +
+                "  `id_rea` int(11), " +
+                "   PRIMARY KEY (id)"+
+                ");";
         PreparedStatement s = c.prepareStatement(SQLPrep);
         s.execute();
     }
@@ -143,12 +144,15 @@ public class Film {
         }
         Connection c = DBConnection.getConnection();
         String SQLPrep = "INSERT INTO Film (titre,id_rea) VALUES (?,?);";
-        int i = Statement.RETURN_GENERATED_KEYS;
-        this.id = i;
-        PreparedStatement prep = c.prepareStatement(SQLPrep, i);
+        PreparedStatement prep = c.prepareStatement(SQLPrep, Statement.RETURN_GENERATED_KEYS);
         prep.setString(1, this.titre);
         prep.setInt(2, this.id_real);
         prep.executeUpdate();
+
+        final var resultSet = prep.getGeneratedKeys();
+        if (resultSet.next()) {
+            this.id = resultSet.getInt(1);
+        }
     }
 
     /**
@@ -160,7 +164,7 @@ public class Film {
             throw new RealisateurAbsentException();
         }
         Connection c = DBConnection.getConnection();
-        String SQLprep = "update Personne set titre=?, id_rea=? where id=?;";
+        String SQLprep = "update Film set titre=?, id_rea=? where id=?;";
         PreparedStatement prep = c.prepareStatement(SQLprep);
         prep.setString(1, this.titre);
         prep.setInt(2, this.id_real);
@@ -174,10 +178,22 @@ public class Film {
      */
     public void delete() throws SQLException {
         Connection c = DBConnection.getConnection();
-        String SQLPrep = "DELETE * FROM Film WHERE id = ?;";
+        String SQLPrep = "DELETE FROM Film WHERE id = ?;";
         PreparedStatement prep1 = c.prepareStatement(SQLPrep);
         prep1.setInt(1, this.id);
         prep1.execute();
         this.id = -1;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
+    }
+
+    public String getTitre() {
+        return titre;
     }
 }
