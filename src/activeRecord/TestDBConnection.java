@@ -1,3 +1,5 @@
+package activeRecord;
+
 import activeRecord.DBConnection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
